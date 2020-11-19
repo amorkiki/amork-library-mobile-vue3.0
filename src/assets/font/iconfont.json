@@ -1,0 +1,51 @@
+{
+  "id": "2212589",
+  "name": "webapp-library",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "7404517",
+      "name": "删除",
+      "font_class": "shanchu",
+      "unicode": "e785",
+      "unicode_decimal": 59269
+    },
+    {
+      "icon_id": "7556165",
+      "name": "加号",
+      "font_class": "jiahao1",
+      "unicode": "e602",
+      "unicode_decimal": 58882
+    },
+    {
+      "icon_id": "1788970",
+      "name": "搜索",
+      "font_class": "sousuo",
+      "unicode": "e6a6",
+      "unicode_decimal": 59046
+    },
+    {
+      "icon_id": "5230820",
+      "name": "书桌",
+      "font_class": "shuzhuo",
+      "unicode": "e639",
+      "unicode_decimal": 58937
+    },
+    {
+      "icon_id": "9731185",
+      "name": "我的",
+      "font_class": "wode",
+      "unicode": "e7c0",
+      "unicode_decimal": 59328
+    },
+    {
+      "icon_id": "12522772",
+      "name": "笔记",
+      "font_class": "biji",
+      "unicode": "e624",
+      "unicode_decimal": 58916
+    }
+  ]
+}
