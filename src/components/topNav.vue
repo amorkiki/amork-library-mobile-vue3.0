@@ -1,19 +1,27 @@
 <template>
   <div class="navbar">
     <div class="title">{{title}}</div>
-    <i v-show="title === '书桌'" class="iconfont icon-sousuo search-btn"></i>
+    <i @click ="topSearch" v-show="title === '书桌'" class="iconfont icon-sousuo search-btn"></i>
   </div>
 </template>
 <script>
 import {reactive,toRefs,inject} from 'vue'
+import {useRouter} from 'vue-router'
 export default {
   setup(){
+    const router = useRouter()
+
     const title=inject('title')
     const state = reactive({
       title
     })
+
+    const topSearch = ()=>{
+      router.push('/search')
+    }
     return {
-      ...toRefs(state)
+      ...toRefs(state),
+      topSearch
     }
   }
   
@@ -21,10 +29,13 @@ export default {
 </script>
 <style lang="less" scoped>
 .navbar{
-  position: relative;
-  width: 100%;
-  height: 46px;
-  // background-color: #eee;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 8vh;
+  background-color: #fff;
+  z-index: 99;
   .title{
     width:100%;
     text-align: center;
@@ -33,8 +44,8 @@ export default {
   }
   .search-btn{
     position: absolute;
-    right: 15px;
-    top:10px;
+    right: 8vw;
+    top:1.2vh;
   }
   
 }

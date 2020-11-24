@@ -9,8 +9,8 @@
     <div class="userName">{{userInfo.name ? userInfo.name : '点我登录'}}</div>
     </label>
   </div>
-  <!--底部导航栏-->
-  <bottom-nav></bottom-nav>
+    <!--底部导航栏-->
+    <bottom-nav></bottom-nav>
   </div>
   
 </template>
@@ -19,7 +19,8 @@ import {reactive,toRefs,onMounted,provide} from 'vue'
 import {useRouter} from 'vue-router'
 import {useStore} from 'vuex'
 import TopNav from '@/components/topNav'
-import BottomNav from '@/components/bottomNav.vue'
+import BottomNav from '@/components/bottomNav'
+
 export default {
   components:{
     TopNav,
@@ -59,7 +60,7 @@ export default {
     width: 80px;
     height: 80px;
     border-radius: 40px;
-    margin:50px auto 0;
+    margin:30% auto 0;
   }
   .userName{
     height: 50px;
