@@ -13,5 +13,11 @@ export const getBookList = ({ role = 'manager', id = '5f3d469cf6f9b8cd2e0e0c2d' 
 // 查询图书列表
 export const searchBookList = (query) => get(`profiles/find/1/${query}`)
 
+// 获取所有书架列表
+export const getBookshelf = () => get('bookshelf')
+
 // 添加图书
 export const addBook = ({ id = '5f3d469cf6f9b8cd2e0e0c2d', form })=>post(`profiles/add/${id}`,form)
+
+//添加书架
+export const addShelf = (shelf_name)=>post('bookshelf/add',shelf_name)

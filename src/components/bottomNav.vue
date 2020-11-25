@@ -87,6 +87,7 @@ export default {
   
 }
 .bottom-bar{
+  z-index: 99;
   position: fixed;
   bottom: 0;
   height: 10vh;

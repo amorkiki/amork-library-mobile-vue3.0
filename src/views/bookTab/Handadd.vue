@@ -20,6 +20,7 @@
         name="b_name"
         label="书名"
         placeholder="请输入书名(必填)"
+        input-align="right"
         :rules="[{ required: true, message: '书名为必填项' }]"
       />
       <van-field
@@ -27,12 +28,14 @@
         name="author"
         label="作者"
         placeholder="请输入作者名(必填)"
+        input-align="right"
         :rules="[{ required: true, message: '作者名为必填项' }]"
       />
       <van-field
         v-model="newBook.publisher"
         name="publisher"
         label="出版社"
+        input-align="right"
         placeholder="请输入出版社名称"
       />
       <van-field
@@ -41,6 +44,7 @@
         label="出版日期"
         placeholder="点击选择出版日期"
         readonly
+        input-align="right"
         clickable
         :value="newBook.publish_date"
         @click="show = true"
@@ -53,6 +57,7 @@
         name="isbn"
         label="ISBN"
         placeholder="请输入ISBN"
+        input-align="right"
       />
       <van-field
         v-if="flag==true"
@@ -60,6 +65,7 @@
         name="b_price"
         label="价格"
         placeholder="请输入价格"
+        input-align="right"
       />
       <div class="donw-up">
         <van-icon @click="flag=true" v-if="flag==false" name="arrow-down" />
@@ -72,6 +78,7 @@
         v-model="newBook.cate_Name"
         readonly
         clickable
+        input-align="right"
         :value="newBook.cate_Name"
         name="cate_Name"
         label="书籍类型"
@@ -90,12 +97,14 @@
         name="pages"
         label="总页码"
         placeholder="请输入总页码(必填)"
+        input-align="right"
       />
       <van-field
         v-model="newBook.current_p"
         name="current_p"
         label="当前页码"
         placeholder="请输入当前页码"
+        input-align="right"
       />
       <!--书籍管理-->
       <div class="divide"></div>
@@ -105,12 +114,14 @@
         name="r_status"
         label="阅读状态"
         placeholder="请选择阅读状态"
+        input-align="right"
       />
       <van-field
         v-model="newBook.b_desk"
         name="b_desk"
         label="书架"
         placeholder="请选择书架"
+        input-align="right"
       />
     </van-form>
   </div>
@@ -143,7 +154,6 @@ export default {
       maxDate: new Date(),
       showPickBook:false,
       bookCate:['1','2','3'],
-
     })
     const backArr=()=>{
       router.go(-1)

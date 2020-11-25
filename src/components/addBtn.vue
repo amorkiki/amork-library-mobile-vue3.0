@@ -74,7 +74,7 @@ export default {
 .add-box{
   float: left;
   width: 20vw;
-  border: 0.5px solid #ccc;
+  border: 0.5px solid #eee;
   border-radius: 3px;
   color: #8C8D8E;
   background-color: #eee;
