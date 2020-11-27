@@ -30,8 +30,8 @@
     </div>
     <!--笔记列表-->
     <!--笔记本-->
-    <div class="notebook" v-for="item in bookInfo" :key="item._id">
-      <img src="https://tva1.sinaimg.cn/large/0081Kckwly1gl0q0wlvrjj305w08f0tg.jpg" :alt="item.b_title">
+    <div class="notebook" @click="goDetails(item._id)" v-for="item in bookInfo" :key="item._id">
+      <img @click="goDetails" src="https://tva1.sinaimg.cn/large/0081Kckwgy1gl3ruy2umij30u016a15r.jpg" :alt="item.b_title">
       <div class="title">{{item.b_name}}</div>
       <div class="note-icon"><van-icon name="bookmark" color="#D8AE98" /></div>
     </div> 
@@ -72,23 +72,28 @@ export default {
       // console.log(res.data)
       state.bookInfo = res.data
     }
+    //去往书籍明细
+    const goDetails=(id)=>{
+      // console.log(id)
+      router.push(`/bookdetail/${id}`)
+    }
     //请求书架列表
     const getBookshelfData=async()=>{
       const res = await getBookshelf()
       // console.log(res.data)
       state.shelfInfo=res.data
       // console.log( state.shelfInfo)
-
     }
 
     onMounted(() => {
       getBookListData()
       getBookshelfData()
-      
     })
+    // 取消编辑
     const cancelEdit=()=>{
       state.show=false
     }
+    // 打开编辑
     const editSheet=(ac,i)=>{
       if(i===1){
         // console.log('新建书架')
@@ -104,9 +109,9 @@ export default {
     provide('title', '书摘')
     return{
       ...toRefs(state),
-
       cancelEdit,
-      editSheet
+      editSheet,
+      goDetails
     }
   }
 }
@@ -151,6 +156,7 @@ export default {
     border:none;
     height: 100%;
     width: 100%;
+
   }
   .title{
     width: 100%;

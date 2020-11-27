@@ -7,13 +7,11 @@
       <van-form @submit="onSubmit" :model="newBook">
       <van-button style="border:none" native-type="submit">保存</van-button>
       <div class="b_img">
-        <div> 
-            <van-field  name="b_img" label="点击上传封面">
-                <template #input>
-                    <van-uploader v-model="newBook.b_img" />
-                </template>
-            </van-field>
-        </div>
+        <van-field  class="b-cover" name="cover_img" clickable v-model="newBook.cover_img">
+            <template #input >
+                <van-uploader upload-text="本地上传" v-model="filePic" max-count="1" :after-read="afterRead"/>
+            </template>
+        </van-field>
     </div>
       <van-field
         v-model="newBook.b_name"
@@ -32,8 +30,8 @@
         :rules="[{ required: true, message: '作者名为必填项' }]"
       />
       <van-field
-        v-model="newBook.publisher"
-        name="publisher"
+        v-model="newBook.publish"
+        name="publish"
         label="出版社"
         input-align="right"
         placeholder="请输入出版社名称"
@@ -46,10 +44,17 @@
         readonly
         input-align="right"
         clickable
-        :value="newBook.publish_date"
-        @click="show = true"
+        v-model="newBook.publish_date"
+        @click="pickDate"
       />
-      <van-calendar color="#E7BEA7" :show="show" :min-date="minDate" :max-date="maxDate" @confirm="confirmPubDate"/>
+      <van-popup :show="showPubDatePicker" position="bottom" >
+      <van-picker
+        show-toolbar
+        :columns="dateColumns"
+        @cancel="showPubDatePicker = false"
+        @confirm="confirmPubDate"
+      />
+      </van-popup>
 
       <van-field
         v-if="flag==true"
@@ -58,6 +63,7 @@
         label="ISBN"
         placeholder="请输入ISBN"
         input-align="right"
+        type="digit"
       />
       <van-field
         v-if="flag==true"
@@ -66,6 +72,7 @@
         label="价格"
         placeholder="请输入价格"
         input-align="right"
+        type="digit"
       />
       <div class="donw-up">
         <van-icon @click="flag=true" v-if="flag==false" name="arrow-down" />
@@ -75,29 +82,12 @@
       <div class="divide"></div>
       <div class="form-title">进度信息</div>
       <van-field
-        v-model="newBook.cate_Name"
-        readonly
-        clickable
-        input-align="right"
-        :value="newBook.cate_Name"
-        name="cate_Name"
-        label="书籍类型"
-        placeholder="点击选择书籍类型"
-      />
-      <van-popup :show="showPickBook" position="bottom">
-        <van-picker
-          show-toolbar
-          :columns="bookCate"
-          @confirm="confirmBookCate"
-          @cancel="showPickBook = false"
-        />
-      </van-popup>
-      <van-field
         v-model="newBook.pages"
         name="pages"
         label="总页码"
         placeholder="请输入总页码(必填)"
         input-align="right"
+        type="digit"
       />
       <van-field
         v-model="newBook.current_p"
@@ -105,32 +95,65 @@
         label="当前页码"
         placeholder="请输入当前页码"
         input-align="right"
+        type="digit"
       />
       <!--书籍管理-->
       <div class="divide"></div>
       <div class="form-title">书籍管理</div>
       <van-field
+        readonly
+        clickable
         v-model="newBook.r_status"
         name="r_status"
         label="阅读状态"
         placeholder="请选择阅读状态"
         input-align="right"
+        @click="showStatusPicker = true"
       />
+      <van-action-sheet
+        v-model="newBook.r_status"
+        :actions="rStatusActions"
+        cancel-text="取消"
+        description="书籍阅读状态"
+        close-on-click-action
+        :show="showStatusPicker"
+        @cancel="cancelStatus"
+        @select="selectStatus"
+      />
+
       <van-field
-        v-model="newBook.b_desk"
-        name="b_desk"
+        readonly
+        clickable
+        v-model="newBook.bookshelf"
+        name="bookshelf"
         label="书架"
         placeholder="请选择书架"
         input-align="right"
+        @click="showBookshelf"
+      />
+      <van-action-sheet
+        v-model="newBook.bookshelf"
+        :actions="bookshelfActions"
+        cancel-text="+ 创建新书架"
+        description="选择书架"
+        close-on-click-action
+        close-on-click-overlay
+        :show="show"
+        @cancel="addBookshelf"
+        @select="selectBookshelf"
+
       />
     </van-form>
   </div>
 </template>
 <script>
-import {reactive,toRefs} from 'vue'
-import { Icon,Form,Field,Uploader,Button,Picker,Calendar,Popup,Toast } from 'vant';
+import {onMounted, reactive,toRefs} from 'vue'
+import { Icon,Form,Field,Uploader,Popup,Button,Picker,Calendar,Toast,ActionSheet } from 'vant';
 import {useRouter} from 'vue-router'
-import {addBook} from '@/api/index'
+import {addBook,getBookshelf} from '@/api/index'
+import getYear from'@/utils/getYear'
+import getMonth from'@/utils/getMonth'
+import getMonthDay from'@/utils/getMonthDay'
 export default {
   name:'VantComponent',
   components:{
@@ -142,22 +165,48 @@ export default {
     [Picker.name]:Picker,
     [Calendar.name]:Calendar,
     [Popup.name]:Popup,
-    [Toast.name]:Toast
+    [Toast.name]:Toast,
+    [ActionSheet.name]:ActionSheet
   },
   setup(){
     const router = useRouter()
     const state=reactive({
       flag:false,
       newBook:{},
-      show: false,
+      showPubDatePicker: false,
       minDate: new Date(1500, 0, 1),
       maxDate: new Date(),
-      showPickBook:false,
-      bookCate:['1','2','3'],
+      dateColumns: [
+        {
+          values: [],
+          defaultIndex: 3,
+        },
+        {
+          values: [],
+          defaultIndex: 2,
+        },
+        {
+          values: [],
+          defaultIndex: 1,
+        }],
+      showStatusPicker:false,
+      rStatusActions:[{name:'正在阅读'},{name:'想读'},{name:'已读完'},{name:'弃读'},{name:'放回书架(闲置)'}],
+      show:false,
+      bookshelfActions:[]
     })
+    // 返回箭头
     const backArr=()=>{
       router.go(-1)
     }
+    // 上传封面
+    const afterRead=(file)=>{
+      console.log(file)
+     var cover_img= file.content.replace(/^data:image\/\w+;base64,/, '') // replace消除前缀，获取完整的base64码
+      
+      // state.newBook.cover_img=cover_img
+      // console.log(state.newBook.cover_img)
+    }
+    //提交表单
     const onSubmit=async (form)=>{
       // console.log(form)
       const res = await addBook({form})
@@ -169,21 +218,73 @@ export default {
         router.go(-1)
       }
     }
+    //点击选择出版时间拿到年月日数据
+    const pickDate=()=>{
+      state.showPubDatePicker=true
+      state.dateColumns[0].values= getYear(1900)
+      state.dateColumns[1].values= getMonth()
+      state.dateColumns[2].values= getMonthDay()
+    }
+    //确认出版时间选择
     const confirmPubDate=(date) =>{
-      console.log(date)
+      // console.log(date) // ["周四", "晚上", "下午"]
+      const str= date.join('')
+      console.log(str)
+      state.newBook.publish_date=str
+      state.showPubDatePicker=false
+    }
+    // 取消选择状态
+    const cancelStatus=()=>{
+      state.showStatusPicker=false
+    }
+    // 确定选择状态
+    const selectStatus=(ac,i)=>{
+      // console.log(ac,i)
+      state.showStatusPicker=false
+      state.newBook.r_status=ac.name
+    }
+    // 点击弹出书架 
+    const showBookshelf=async()=>{
+      const res= await getBookshelf().then(res=>{
+        // console.log(res.data)
+        let arr =[]
+        for(let i in res.data){
+          arr.push(res.data[i].shelf_name)
+        }
+        // console.log(arr)
+        let shelfArr=[]
+        for(let i = 0;i<arr.length;i++){
+          let j ={}
+          j.name=arr[i]
+          shelfArr.push(j)
+        }
+        // console.log(shelfArr)
+        state.bookshelfActions=shelfArr
+        state.show=true
+      })
+      
+    }
+    // 添加书架
+    const addBookshelf=()=>{
+      router.push('/addshelf')
+    }
+    // 选择书架
+    const selectBookshelf=(ac,i)=>{
+      state.newBook.bookshelf=ac.name
       state.show=false
     }
-    const confirmBookCate=(cate)=>{
-      console.log(cate)
-      state.showPickBook=false
-    }
-
     return {
       ...toRefs(state),
       backArr,
+      afterRead,
       onSubmit,
       confirmPubDate,
-      confirmBookCate
+      pickDate,
+      cancelStatus,
+      selectStatus,
+      showBookshelf,
+      addBookshelf,
+      selectBookshelf
     }
 
   }
@@ -224,16 +325,17 @@ export default {
   width:100vw;
   height: 24vh;
   // background-color: yellow;
-  >div{
+  .b-cover{
     position: absolute;
     top: 55%;
     left: 50%;
     transform: translate(-50%,-50%);
-    background-color: #ccc;
+    background-color: #F7F8FA;
     width: 12vh;
     height: 14vh;
     border-radius: 5px;
-    overflow: hidden;    
+    overflow: hidden;
+    padding: 2% 1%;
   }
 }
 .donw-up{

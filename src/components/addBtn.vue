@@ -5,6 +5,7 @@
       :show="show"
       :actions="actions"
       cancel-text="取消"
+      description="添加书籍"
       close-on-click-action
       @cancel="onCancel"
       @select="selectSheet"
@@ -28,7 +29,7 @@ export default {
     const router=useRouter()
     const state=reactive({
       show:false,
-      actions: [{ name: '添加书籍',disabled:'true' },{ name: '扫码藏书' }, { name: '搜索书籍' }, { name: '手动录入' }],
+      actions: [{ name: '扫码藏书' }, { name: '搜索书籍' }, { name: '手动录入' }],
     })
     const actionShow = ()=>{
       state.show=true
@@ -40,7 +41,7 @@ export default {
     }
     const selectSheet=(ac,i)=>{
       // console.log(ac ,i) //Proxy {name: "手动录入"} , 3
-      if (i == 3){
+      if (i == 2){
         router.push('/handadd')
       }
     }

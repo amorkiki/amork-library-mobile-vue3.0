@@ -1,6 +1,6 @@
 <template>
-  <div class="book-list" v-for="item in list" :key="item._id">
-      <div class="img"> <img src="https://tva1.sinaimg.cn/large/0081Kckwly1gkuggn63ooj304p06ngmm.jpg" /></div>
+  <div @click="goDetails(item._id)" class="book-list" v-for="item in list" :key="item._id">
+      <div class="img"> <img src="https://tva1.sinaimg.cn/large/0081Kckwgy1gl3ruy2umij30u016a15r.jpg" /></div>
       <div class="b-details">
         <div class="b-title"><text>{{item.b_name.length>20? item.b_name.substr(0,20)+'...':item.b_name}}</text></div>
         <div class="progress">
@@ -19,15 +19,22 @@
 </template>
 <script>
 import {reactive,toRefs,inject,onMounted} from 'vue'
+import {useRouter} from 'vue-router'
 export default {
   props: {
     list: Array,
   },
   setup(){
+    const router = useRouter()
     const state=reactive({})
 
-
-
+    const goDetails=(id)=>{
+      // console.log(id)
+      router.push(`/bookdetail/${id}`)
+    }
+    return {
+      goDetails
+    }
 
   }
   
@@ -50,9 +57,8 @@ export default {
     overflow: hidden;
     margin-top: 1vh;
     >img{
-      width: 90%;
-      height: 90%;
-      margin:2%;
+      height: 100%;
+      width: 100%;
     }
   }
   .b-details{
