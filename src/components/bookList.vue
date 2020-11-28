@@ -9,9 +9,9 @@
           <text class="progress-num">{{(item.current_p/item.pages).toFixed(2)*100 >100 ? 100 :(item.current_p/item.pages).toFixed(2)*100 }}%</text>
         </div>
         <div class="btns">
-        <button>记录进度</button>
-        <button>记录书摘</button>
-        <button>编辑此书</button>
+        <button @click.stop="editProgress(item._id)">记录进度</button>
+        <button @click.stop="editSnipping(item._id)">记录书摘</button>
+        <button @click.stop="editThis(item._id)">编辑此书</button>
         </div>
       </div>
     </div>
@@ -32,12 +32,28 @@ export default {
       // console.log(id)
       router.push(`/bookdetail/${id}`)
     }
-    return {
-      goDetails
+    // 点击按钮记录阅读进度
+    const editProgress=(id)=>{
+      // console.log(id)
+      router.push(`/progress/${id}`)
     }
-
+    // 点击按钮记录书摘
+    const editSnipping=(id)=>{
+      // console.log(id)
+      router.push(`/snipping/${id}`)
+    }
+    // 点击按钮编辑本书
+    const editThis=(id)=>{
+      // console.log(id)
+      router.push(`/handedit/${id}`)
+    }
+    return {
+      goDetails,
+      editProgress,
+      editSnipping,
+      editThis
+    }
   }
-  
 }
 </script>
 <style lang="less" scoped>

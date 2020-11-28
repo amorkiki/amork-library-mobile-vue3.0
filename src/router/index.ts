@@ -67,6 +67,30 @@ const routes: Array<RouteRecordRaw> = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/bookTab/Handadd.vue')
+  },
+  {
+    path: '/handedit/:id',
+    name: 'Handedit',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/bookTab/Handadd.vue')
+  },
+  {
+    path: '/progress/:id',
+    name: 'Progress',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/bookTab/Progress.vue')
+  },
+  {
+    path: '/snipping/:id',
+    name: 'Snipping',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/bookTab/Snipping.vue')
   }
 ]
 

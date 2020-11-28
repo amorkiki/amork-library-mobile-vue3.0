@@ -1,5 +1,5 @@
 // import request from '@/api/request'
-import {post,get,del} from "@/api/http";
+import {post,get,del,put} from "@/api/http";
 
 //登录获取用户数据
 export const logIn = ({email,password})=>post('users/login',{email,password})
@@ -12,6 +12,8 @@ export const getBookList = ({ role = 'manager', id = '5f3d469cf6f9b8cd2e0e0c2d' 
 
 //获取单个图书
 export const getBook = (id) => get(`profiles/${id}`)
+//修改单个图书
+export const editBook=({id,form})=>put(`profiles/edit/${id}`,form)
 //删除单个图书
 export const deleteBook = (id)=>del(`profiles/delete/${id}`)
 

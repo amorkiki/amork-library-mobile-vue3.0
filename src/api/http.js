@@ -15,7 +15,7 @@ instance.interceptors.request.use(config => {
   return config
 })
 
-
+//get请求
 export function get (url, params = {}) {
     return new Promise((resolve, reject) => {
       instance
@@ -56,6 +56,18 @@ export function  del (url, data = {}){
         }
       )
     })
-  }
+}
 
-  
+//put请求
+export function put (url, data = {}) {
+  return new Promise((resolve, reject) => {
+    instance.put(url, data).then(
+      (response) => {
+        resolve(response.data)
+      },
+      (err) => {
+        reject(err)
+      }
+    )
+  })
+}

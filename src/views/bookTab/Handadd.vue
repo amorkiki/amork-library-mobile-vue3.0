@@ -4,17 +4,17 @@
       <van-icon class="icon-arr" @click="backArr" name="arrow-left" />
     </div>
     <!--基本信息-->
-      <van-form @submit="onSubmit" :model="newBook">
+      <van-form @submit="onSubmit" :model="bookInfo">
       <van-button style="border:none" native-type="submit">保存</van-button>
       <div class="b_img">
-        <van-field  class="b-cover" name="cover_img" clickable v-model="newBook.cover_img">
+        <van-field  class="b-cover" name="cover_img" clickable v-model="bookInfo.cover_img">
             <template #input >
-                <van-uploader upload-text="本地上传" v-model="filePic" max-count="1" :after-read="afterRead"/>
+                <van-uploader upload-text="本地上传"  max-count="1" />
             </template>
         </van-field>
     </div>
       <van-field
-        v-model="newBook.b_name"
+        v-model="bookInfo.b_name"
         name="b_name"
         label="书名"
         placeholder="请输入书名(必填)"
@@ -22,7 +22,7 @@
         :rules="[{ required: true, message: '书名为必填项' }]"
       />
       <van-field
-        v-model="newBook.author"
+        v-model="bookInfo.author"
         name="author"
         label="作者"
         placeholder="请输入作者名(必填)"
@@ -30,7 +30,7 @@
         :rules="[{ required: true, message: '作者名为必填项' }]"
       />
       <van-field
-        v-model="newBook.publish"
+        v-model="bookInfo.publish"
         name="publish"
         label="出版社"
         input-align="right"
@@ -44,7 +44,7 @@
         readonly
         input-align="right"
         clickable
-        v-model="newBook.publish_date"
+        v-model="bookInfo.publish_date"
         @click="pickDate"
       />
       <van-popup :show="showPubDatePicker" position="bottom" >
@@ -58,8 +58,8 @@
 
       <van-field
         v-if="flag==true"
-        v-model="newBook.isbn"
-        name="isbn"
+        v-model="bookInfo.isbn_num"
+        name="isbn_num"
         label="ISBN"
         placeholder="请输入ISBN"
         input-align="right"
@@ -67,7 +67,7 @@
       />
       <van-field
         v-if="flag==true"
-        v-model="newBook.b_price"
+        v-model="bookInfo.b_price"
         name="b_price"
         label="价格"
         placeholder="请输入价格"
@@ -82,7 +82,7 @@
       <div class="divide"></div>
       <div class="form-title">进度信息</div>
       <van-field
-        v-model="newBook.pages"
+        v-model="bookInfo.pages"
         name="pages"
         label="总页码"
         placeholder="请输入总页码(必填)"
@@ -90,7 +90,7 @@
         type="digit"
       />
       <van-field
-        v-model="newBook.current_p"
+        v-model="bookInfo.current_p"
         name="current_p"
         label="当前页码"
         placeholder="请输入当前页码"
@@ -103,7 +103,7 @@
       <van-field
         readonly
         clickable
-        v-model="newBook.r_status"
+        v-model="bookInfo.r_status"
         name="r_status"
         label="阅读状态"
         placeholder="请选择阅读状态"
@@ -111,7 +111,7 @@
         @click="showStatusPicker = true"
       />
       <van-action-sheet
-        v-model="newBook.r_status"
+        v-model="bookInfo.r_status"
         :actions="rStatusActions"
         cancel-text="取消"
         description="书籍阅读状态"
@@ -124,7 +124,7 @@
       <van-field
         readonly
         clickable
-        v-model="newBook.bookshelf"
+        v-model="bookInfo.bookshelf"
         name="bookshelf"
         label="书架"
         placeholder="请选择书架"
@@ -132,7 +132,7 @@
         @click="showBookshelf"
       />
       <van-action-sheet
-        v-model="newBook.bookshelf"
+        v-model="bookInfo.bookshelf"
         :actions="bookshelfActions"
         cancel-text="+ 创建新书架"
         description="选择书架"
@@ -148,9 +148,9 @@
 </template>
 <script>
 import {onMounted, reactive,toRefs} from 'vue'
-import { Icon,Form,Field,Uploader,Popup,Button,Picker,Calendar,Toast,ActionSheet } from 'vant';
+import { Icon,Form,Field,Uploader,Popup,Button,Picker,Toast,ActionSheet } from 'vant';
 import {useRouter} from 'vue-router'
-import {addBook,getBookshelf} from '@/api/index'
+import {addBook,editBook,getBookshelf,getBook} from '@/api/index'
 import getYear from'@/utils/getYear'
 import getMonth from'@/utils/getMonth'
 import getMonthDay from'@/utils/getMonthDay'
@@ -163,7 +163,6 @@ export default {
     [Uploader.name]:Uploader,
     [Button.name]:Button,
     [Picker.name]:Picker,
-    [Calendar.name]:Calendar,
     [Popup.name]:Popup,
     [Toast.name]:Toast,
     [ActionSheet.name]:ActionSheet
@@ -172,7 +171,7 @@ export default {
     const router = useRouter()
     const state=reactive({
       flag:false,
-      newBook:{},
+      bookInfo:{},
       showPubDatePicker: false,
       minDate: new Date(1500, 0, 1),
       maxDate: new Date(),
@@ -199,24 +198,41 @@ export default {
       router.go(-1)
     }
     // 上传封面
-    const afterRead=(file)=>{
-      console.log(file)
-     var cover_img= file.content.replace(/^data:image\/\w+;base64,/, '') // replace消除前缀，获取完整的base64码
+    // const afterRead=(file)=>{
+    //   console.log(file)
+    //  var cover_img= file.content.replace(/^data:image\/\w+;base64,/, '') // replace消除前缀，获取完整的base64码
       
-      // state.newBook.cover_img=cover_img
-      // console.log(state.newBook.cover_img)
-    }
+    //   // state.bookInfo.cover_img=cover_img
+    //   // console.log(state.bookInfo.cover_img)
+    // }
+    //判断是否为编辑操作
+    onMounted(async()=>{
+      // console.log(router.currentRoute.value.params.id)
+      if(router.currentRoute.value.params.id){
+        const {data:res} = await getBook(router.currentRoute.value.params.id)
+        // console.log(res.data)
+        state.bookInfo=res.data
+      }
+    })
     //提交表单
     const onSubmit=async (form)=>{
-      // console.log(form)
-      const res = await addBook({form})
-      console.log(res)
-      if(res.meta.status !== 200){
-        Toast('添加失败,本书可能已被添加过啦~~')
-      }else{
-        Toast('添加成功>_<~~')
-        router.go(-1)
-      }
+      // console.log(router.currentRoute.value.params.id)
+      // if(router.currentRoute.value.params.id){
+      //   console.log('edit')
+      //   const b_id=router.currentRoute.value.params.id
+      //   const res = await editBook({b_id,form})
+      //   console.log(res)
+      // }else{
+        console.log('add')
+        const res = await addBook({form})
+        console.log(res)
+        if(res.meta.status !== 200){
+          Toast('添加失败,本书可能已被添加过啦~~')
+        }else{
+          Toast('添加成功>_<~~')
+          router.go(-1)
+        }
+      // }
     }
     //点击选择出版时间拿到年月日数据
     const pickDate=()=>{
@@ -230,7 +246,7 @@ export default {
       // console.log(date) // ["周四", "晚上", "下午"]
       const str= date.join('')
       console.log(str)
-      state.newBook.publish_date=str
+      state.bookInfo.publish_date=str
       state.showPubDatePicker=false
     }
     // 取消选择状态
@@ -241,7 +257,7 @@ export default {
     const selectStatus=(ac,i)=>{
       // console.log(ac,i)
       state.showStatusPicker=false
-      state.newBook.r_status=ac.name
+      state.bookInfo.r_status=ac.name
     }
     // 点击弹出书架 
     const showBookshelf=async()=>{
@@ -270,13 +286,12 @@ export default {
     }
     // 选择书架
     const selectBookshelf=(ac,i)=>{
-      state.newBook.bookshelf=ac.name
+      state.bookInfo.bookshelf=ac.name
       state.show=false
     }
     return {
       ...toRefs(state),
       backArr,
-      afterRead,
       onSubmit,
       confirmPubDate,
       pickDate,
